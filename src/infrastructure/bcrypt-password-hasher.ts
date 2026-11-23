@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import type { PasswordHasher } from "@/application/ports/password-hasher";
 
 /** Costo por defecto de bcrypt: unos 250 ms por hash, lento a propósito contra fuerza bruta. */
@@ -7,11 +8,12 @@ export const DEFAULT_BCRYPT_COST = 12;
 export class BcryptPasswordHasher implements PasswordHasher {
   constructor(private readonly cost: number = DEFAULT_BCRYPT_COST) {}
 
-  async hash(_plain: string): Promise<string> {
-    throw new Error("Not implemented");
+  hash(plain: string): Promise<string> {
+    return bcrypt.hash(plain, this.cost);
   }
 
-  async verify(_plain: string, _hash: string): Promise<boolean> {
-    throw new Error("Not implemented");
+  verify(plain: string, hash: string): Promise<boolean> {
+    // bcrypt.compare compara en tiempo constante.
+    return bcrypt.compare(plain, hash);
   }
 }

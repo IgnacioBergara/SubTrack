@@ -28,8 +28,33 @@ const eslintConfig = [
             },
             { group: ["@prisma/*", "stripe"], message: "El dominio no conoce la infraestructura." },
             {
-              group: ["@/app/*", "@/infrastructure/*"],
+              group: ["@/app/*", "@/application/*", "@/infrastructure/*"],
               message: "El dominio no depende de capas externas.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // RNF-07: los casos de uso dependen de interfaces (ports), nunca de implementaciones concretas.
+    files: ["src/application/**/*.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["next", "next/*", "react", "react-dom"],
+              message: "Los casos de uso son independientes del framework.",
+            },
+            {
+              group: ["@prisma/*", "bcryptjs", "stripe"],
+              message: "Usá un port en src/application/ports e inyectá la implementación.",
+            },
+            {
+              group: ["@/app/*", "@/infrastructure/*"],
+              message: "La aplicación no depende de capas externas.",
             },
           ],
         },

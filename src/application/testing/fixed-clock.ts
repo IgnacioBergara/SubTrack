@@ -13,6 +13,11 @@ export class FixedClock implements Clock {
   }
 
   advanceDays(days: number): void {
-    this.current = new Date(this.current.getTime() + days * 86_400_000);
+    this.advanceMilliseconds(days * 86_400_000);
+  }
+
+  /** Acepta negativos, para probar el instante justo antes de un límite. */
+  advanceMilliseconds(ms: number): void {
+    this.current = new Date(this.current.getTime() + ms);
   }
 }

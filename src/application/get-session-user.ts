@@ -14,8 +14,18 @@ export interface GetSessionUserDeps {
 }
 
 /** RF-05: resuelve el usuario de un token de sesión vigente. */
-export function makeGetSessionUser(_deps: GetSessionUserDeps) {
-  return async function getSessionUser(_token: string): Promise<GetSessionUserResult> {
-    throw new Error("Not implemented");
+export function makeGetSessionUser({ sessions, tokens, clock }: GetSessionUserDeps) {
+  return async function getSessionUser(token: string): Promise<GetSessionUserResult> {
+    const tokenHash = tokens.hash(token);
+    const session = await sessions.findByTokenHash(tokenHash);
+    if (!session) return { ok: false, error: "UNAUTHENTICATED" };
+
+    // Vence en el instante exacto de expiresAt; de paso se limpia de la base.
+    if (clock.now().getTime() >= session.expiresAt.getTime()) {
+      await sessions.deleteByTokenHash(tokenHash);
+      return { ok: false, error: "UNAUTHENTICATED" };
+    }
+
+    return { ok: true, userId: session.userId };
   };
 }

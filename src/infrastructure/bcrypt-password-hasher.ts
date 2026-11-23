@@ -12,7 +12,8 @@ export class BcryptPasswordHasher implements PasswordHasher {
     return bcrypt.hash(plain, this.cost);
   }
 
-  verify(plain: string, hash: string): Promise<boolean> {
+  verify(plain: string, hash: string | null): Promise<boolean> {
+    if (hash === null) throw new Error("Not implemented");
     // bcrypt.compare compara en tiempo constante.
     return bcrypt.compare(plain, hash);
   }

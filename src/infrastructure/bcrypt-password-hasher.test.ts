@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import bcrypt from "bcryptjs";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { BcryptPasswordHasher } from "./bcrypt-password-hasher";
 
 // Costo mínimo de bcrypt para que los tests no tarden; el de producción se prueba aparte.
@@ -41,6 +42,27 @@ describe("BcryptPasswordHasher", () => {
       const hash = await hasher.hash("s3cret-pass");
 
       expect(await hasher.verify("S3CRET-PASS", hash)).toBe(false);
+    });
+  });
+
+  describe("verify without a stored hash (unknown email, RF-05)", () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it("rejects any password", async () => {
+      expect(await hasher.verify("s3cret-pass", null)).toBe(false);
+    });
+
+    it("still runs a full bcrypt comparison at the configured cost, to keep timing even", async () => {
+      const compare = vi.spyOn(bcrypt, "compare");
+
+      await hasher.verify("s3cret-pass", null);
+
+      expect(compare).toHaveBeenCalledExactlyOnceWith(
+        "s3cret-pass",
+        expect.stringMatching(/^\$2[aby]\$04\$/),
+      );
     });
   });
 });

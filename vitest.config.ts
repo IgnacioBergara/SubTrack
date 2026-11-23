@@ -39,7 +39,7 @@ export default defineConfig({
       exclude: [
         "src/**/*.test.ts",
         "src/**/*.d.ts",
-        "src/app/**",
+        "src/app/**/*.tsx", // páginas y layouts: se prueban con E2E; los route handlers sí cuentan
         "src/**/testing/**", // dobles de test: no son código de producción
         "src/**/ports/**", // solo interfaces y errores, sin lógica
       ],

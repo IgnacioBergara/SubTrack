@@ -6,7 +6,7 @@ export class FakePasswordHasher implements PasswordHasher {
     return `hashed:${plain}`;
   }
 
-  async verify(plain: string, hash: string): Promise<boolean> {
-    return hash === `hashed:${plain}`;
+  async verify(plain: string, hash: string | null): Promise<boolean> {
+    return hash !== null && hash === `hashed:${plain}`;
   }
 }

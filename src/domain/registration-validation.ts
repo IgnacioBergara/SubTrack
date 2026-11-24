@@ -26,10 +26,15 @@ export const MAX_PASSWORD_BYTES = 72;
 /** Algo@algo.ext, sin espacios. La verificación real de un email es mandarle un correo. */
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/** Forma canónica del email: la misma al registrarse y al iniciar sesión. */
+export function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
 /** RF-04: email con formato válido y contraseña de al menos 8 caracteres. */
 export function validateRegistration(input: RegistrationInput): RegistrationValidationResult {
   const errors: RegistrationValidationError[] = [];
-  const email = input.email.trim().toLowerCase();
+  const email = normalizeEmail(input.email);
 
   if (!EMAIL_PATTERN.test(email)) errors.push("EMAIL_INVALID");
 
